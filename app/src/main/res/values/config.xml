@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <integer name="help_tips_right_answer">90</integer>
+    <integer name="help_delete_wrong_answer">30</integer>
+
+</resources>
