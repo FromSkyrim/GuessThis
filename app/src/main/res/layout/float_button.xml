@@ -99,13 +99,5 @@
         </FrameLayout>
     </LinearLayout>
 
-    <ImageButton
-        android:visibility="gone"
-        android:id="@+id/btn_share"
-        android:background="@drawable/share_button_icon"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="300dp"
-        android:layout_width="70dp"
-        android:layout_height="75dp" />
 
 </RelativeLayout>

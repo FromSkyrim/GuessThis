@@ -1,7 +1,7 @@
 package com.fatty.guessthissong;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -23,6 +23,11 @@ import com.fatty.guessthissong.model.WordButtonClickListener;
 import com.fatty.guessthissong.myUi.MyGridView;
 import com.fatty.guessthissong.util.MyPlayer;
 import com.fatty.guessthissong.util.Util;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXImageObject;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,6 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends Activity implements WordButtonClickListener {
+
 
     public static final int STATUS_ANSWER_CORRECT = 1;
     public static final int STATUS_ANSWER_INCORRECT = 2;
@@ -41,6 +47,8 @@ public class MainActivity extends Activity implements WordButtonClickListener {
 
     private Animation mPanAnim;
     private LinearInterpolator mPanLin;
+
+
 
     private Animation mBarInAnim;
     private LinearInterpolator mBarInLin;
@@ -61,6 +69,12 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     private ArrayList<WordButton> mBtnSelectedWords;
 
     private MyGridView mMyGridView;
+
+    /*注册微信分享功能*/
+    private static final String APP_ID = "wxbee94cb77ee27244";
+
+    /*IWXAPI是第三方app和微信通信的openapi接口*/
+    public static IWXAPI api;
 
     /*初始化过关界面*/
     private LinearLayout passView;
@@ -94,6 +108,9 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     /*初始化过关界面中的下一关按钮*/
     private ImageButton mBtnNextLevel;
 
+    /*初始化过关界面中的分享到微信按钮*/
+    private ImageButton mBtnShareToWX;
+
     /*在猜歌主界面中显示当前是第几关的TextView*/
     private TextView mMainActivityTextViewCurrentLevelNumber;
 
@@ -112,6 +129,8 @@ public class MainActivity extends Activity implements WordButtonClickListener {
         /*初始化唱片盘和唱片针*/
         mViewPan = (ImageView) findViewById(R.id.imageView1);
         mViewPanBar = (ImageView) findViewById(R.id.imageView2);
+
+        regToWx();
 
         /*初始化显示你拥有多少金币的那个控件*/
         mTextViewCurrentConis = (TextView) findViewById(R.id.txt_bar_coins);
@@ -221,6 +240,7 @@ public class MainActivity extends Activity implements WordButtonClickListener {
         handleButtonTipRightAnswer();
 
         handleButtonDeleteWrongAnswer();
+
 
 
         /*设置topbar中的返回按钮*/
@@ -369,7 +389,6 @@ public class MainActivity extends Activity implements WordButtonClickListener {
 
     /*处理过关界面的逻辑*/
     private void handlePassEvent() {
-
         /*过一关奖励三个金币*/
         mCurrentCoins += 3;
         mTextViewCurrentConis.setText(mCurrentCoins + "");
@@ -408,11 +427,25 @@ public class MainActivity extends Activity implements WordButtonClickListener {
                     Util.startActivity(MainActivity.this, CourseClear.class, value);
                     Util.saveData(MainActivity.this, -1, mCurrentCoins);
 
+
+
                 } else {
                     /*如果只是正常过关，就*/
                     passView.setVisibility(View.GONE);
                     initCurrentStageData();
                 }
+            }
+        });
+
+        mBtnShareToWX = (ImageButton) findViewById(R.id.btn_share);
+        mBtnShareToWX.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mBtnShareToWX.setVisibility(View.INVISIBLE);
+                mBtnNextLevel.setVisibility(View.INVISIBLE);
+                wechatShare();
+                mBtnShareToWX.setVisibility(View.VISIBLE);
+                mBtnNextLevel.setVisibility(View.VISIBLE);
             }
         });
 
@@ -692,6 +725,41 @@ public class MainActivity extends Activity implements WordButtonClickListener {
                         dialogNotEnoughCoinsButtonClickListener);
                 break;
         }
+    }
+
+    private Bitmap generateScreenShot() {
+        View view = getWindow().getDecorView();
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache();
+
+        return view.getDrawingCache();
+    }
+
+    private void regToWx() {
+        api = WXAPIFactory.createWXAPI(this, APP_ID, true);
+
+        api.registerApp(APP_ID);
+    }
+
+
+    /*分享图片到微信*/
+    private void wechatShare() {
+        //初始化WXImageObject和WXMediaMessage对象
+        Bitmap bmp = generateScreenShot();
+        WXImageObject imgObj = new WXImageObject(bmp);
+        WXMediaMessage msg = new WXMediaMessage();
+        msg.mediaObject = imgObj;
+
+        //构造一个Req
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = String.valueOf(System.currentTimeMillis());
+        //transaction字段用于唯一标识一个请求
+
+        req.message = msg;
+        req.scene = SendMessageToWX.Req.WXSceneTimeline;
+        api.sendReq(req);
+
+
     }
 
 

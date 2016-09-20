@@ -51,6 +51,7 @@
         android:gravity="center">
 
         <ImageButton
+            android:id="@+id/btn_share_to_wx_course_clear"
             android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
