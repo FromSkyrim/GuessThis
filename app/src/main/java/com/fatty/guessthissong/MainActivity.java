@@ -48,8 +48,6 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     private Animation mPanAnim;
     private LinearInterpolator mPanLin;
 
-
-
     private Animation mBarInAnim;
     private LinearInterpolator mBarInLin;
 
@@ -80,7 +78,7 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     private LinearLayout passView;
 
     /*现在拥有的金币数量*/
-    private int mCurrentCoins = Const.TOTAL_COINS;
+    private static int mCurrentCoins = Const.TOTAL_COINS;
 
     /*这个是容纳被选字的linearlayout容器*/
     private LinearLayout mViewWordsContainer;
@@ -89,13 +87,13 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     private Song mCurrentSong;
 
     /*当前关的索引,用来从保存歌曲信息的二维数组中取出当前关歌曲的数据*/
-    private int mCurrentStageIndex = -1;
+    private static int mCurrentStageIndex = -1;
 
     /*答题错误时,需要文字闪烁几次*/
     private final static int SET_SPARK_TIMES = 6;
 
     /*主界面中显示当前金币数量的TextView*/
-    private TextView mTextViewCurrentConis;
+    private static TextView mTextViewCurrentConis;
 
     /*过关界面中显示当前是第几关的TextView*/
     private TextView mTextViewCurrentLevelNumber;
@@ -390,8 +388,7 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     /*处理过关界面的逻辑*/
     private void handlePassEvent() {
         /*过一关奖励三个金币*/
-        mCurrentCoins += 3;
-        mTextViewCurrentConis.setText(mCurrentCoins + "");
+        coinReward(3);
 
         /*展示过关界面*/
         passView = (LinearLayout) findViewById(R.id.pass_view);
@@ -426,7 +423,6 @@ public class MainActivity extends Activity implements WordButtonClickListener {
                     /*如果全部通关，则展示最终通关界面*/
                     Util.startActivity(MainActivity.this, CourseClear.class, value);
                     Util.saveData(MainActivity.this, -1, mCurrentCoins);
-
 
 
                 } else {
@@ -760,6 +756,12 @@ public class MainActivity extends Activity implements WordButtonClickListener {
         api.sendReq(req);
 
 
+    }
+
+    public static int coinReward(int num) {
+        mCurrentCoins += num;
+        mTextViewCurrentConis.setText(mCurrentCoins + "");
+        return mCurrentCoins;
     }
 
 

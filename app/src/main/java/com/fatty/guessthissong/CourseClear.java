@@ -8,12 +8,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.fatty.guessthissong.util.Util;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.sdk.modelmsg.WXImageObject;
 import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 
 public class CourseClear extends Activity {
 
+    private ImageButton mBtnGoToMarket;
     private ImageButton mBtnCourseClearShareToWX;
 
     @Override
@@ -21,10 +23,21 @@ public class CourseClear extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_clear);
 
+        mBtnGoToMarket = (ImageButton) findViewById(R.id.btn_go_to_market);
+        mBtnGoToMarket.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Util.saveData(CourseClear.this, -1, MainActivity.coinReward(50));
+                Util.goToMarket(CourseClear.this, "com.fatty.guessthissong");
+            }
+        });
+
         mBtnCourseClearShareToWX = (ImageButton) findViewById(R.id.btn_share_to_wx_course_clear);
         mBtnCourseClearShareToWX.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Util.saveData(CourseClear.this, -1, MainActivity.coinReward(50));
                 //初始化WXImageObject和WXMediaMessage对象
                 Bitmap bmp = generateScreenShot();
                 WXImageObject imgObj = new WXImageObject(bmp);
