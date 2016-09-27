@@ -19,6 +19,7 @@ public class MyPlayer {
     public static final int INDEX_SOUND_EFFECT_CANCEL = 1;
     public static final int INDEX_SOUND_EFFECT_COIN = 2;
 
+
     /*音效的文件名*/
     private static final String[] SONG_EFFECT_NAMES = {"enter.mp3", "cancel.mp3", "coin.mp3"};
 
@@ -57,7 +58,7 @@ public class MyPlayer {
 
 
     /*播放音乐*/
-    public static void playMusic(Context context, String fileName) {
+    public static int playMusic(Context context, String fileName, boolean play) {
         if (mMusicMediaPlayer == null) {
             mMusicMediaPlayer = new MediaPlayer();
         }
@@ -73,15 +74,20 @@ public class MyPlayer {
                     fileDescriptor.getLength());
 
             mMusicMediaPlayer.prepare();
+            int songDuration = mMusicMediaPlayer.getDuration();
 
-            /*声音播放*/
-            mMusicMediaPlayer.start();
+            /*如果调用方法是为了获取歌曲时长就不播放，如果是为了播放就播放，以play控制*/
+            if (play) {
+                mMusicMediaPlayer.start();
+            }
 
+            return songDuration;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return 0;
     }
+
 
     /*停止播放*/
     public static void stopMusic(Context context) {

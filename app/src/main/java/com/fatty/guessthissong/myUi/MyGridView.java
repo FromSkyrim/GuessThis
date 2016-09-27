@@ -71,7 +71,6 @@ public class MyGridView extends GridView {
             if (view == null) {
                 view = Util.getView(mContext, R.layout.grid_view_item);
 
-
                 /*加载动画*/
                 mScaleAnimation = AnimationUtils.loadAnimation(mContext, R.anim.scale);
 

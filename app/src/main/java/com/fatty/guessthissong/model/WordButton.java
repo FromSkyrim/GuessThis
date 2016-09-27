@@ -9,7 +9,7 @@ import android.widget.Button;
 /*猜歌的文字按钮*/
 public class WordButton {
 
-    /*还不确定是啥*/
+    /*序号*/
     public int mIndex;
     /*这个按钮是否可见,因为如果按上去了,就不可见了*/
     public boolean mIsVisiable;

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -45,6 +46,8 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     public static final int ID_DIALOG_TIP_WORD = 2;
     public static final int ID_DIALOG_NOT_ENOUGHT_COINS = 3;
 
+    private int mCurrentSongDuration;
+
     private Animation mPanAnim;
     private LinearInterpolator mPanLin;
 
@@ -67,6 +70,7 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     private ArrayList<WordButton> mBtnSelectedWords;
 
     private MyGridView mMyGridView;
+
 
     /*注册微信分享功能*/
     private static final String APP_ID = "wxbee94cb77ee27244";
@@ -145,6 +149,7 @@ public class MainActivity extends Activity implements WordButtonClickListener {
 
         /*初始化动画*/
         mPanAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
+
         mPanLin = new LinearInterpolator();
         mPanAnim.setInterpolator(mPanLin);
 
@@ -166,7 +171,8 @@ public class MainActivity extends Activity implements WordButtonClickListener {
         mPanAnim.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                MyPlayer.playMusic(MainActivity.this, mCurrentSong.getSongFileName());
+                MyPlayer.playMusic(MainActivity.this, mCurrentSong.getSongFileName(), true);
+
                 isRunning = true;
             }
 
@@ -287,6 +293,12 @@ public class MainActivity extends Activity implements WordButtonClickListener {
         /*读取当前关的歌曲信息*/
         mCurrentSong = loadStageSongInfo(++mCurrentStageIndex);
 
+
+        /*设置旋转动画的播放长度*/
+        mCurrentSongDuration = MyPlayer.playMusic(MainActivity.this, mCurrentSong.getSongFileName(), false);
+        Log.d("MainActivity", "现在歌曲的播放长度是" + mCurrentSongDuration);
+
+        mPanAnim.setDuration(mCurrentSongDuration);
         /*初始化已选择的文字框*/
         mBtnSelectedWords = initSelectedWords();
 
@@ -388,7 +400,7 @@ public class MainActivity extends Activity implements WordButtonClickListener {
     /*处理过关界面的逻辑*/
     private void handlePassEvent() {
         /*过一关奖励三个金币*/
-        coinReward(3);
+        coinReward(Const.COIN_REWARD_FOR_EACH_LEVEL);
 
         /*展示过关界面*/
         passView = (LinearLayout) findViewById(R.id.pass_view);
@@ -463,8 +475,6 @@ public class MainActivity extends Activity implements WordButtonClickListener {
                 mBtnSelectedWords.get(i).mIndex = wordButton.mIndex;
                 mBtnSelectedWords.get(i).mWordString = wordButton.mWordString;
                 mBtnSelectedWords.get(i).mIsVisiable = true;
-
-                /*log*/
 
                 /*设置下面待选框的文字 在选择后设为不可见*/
                 setButtonVisibility(wordButton, View.INVISIBLE);
